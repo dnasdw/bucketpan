@@ -2,6 +2,7 @@
 #define BUCKETPAN_H_
 
 #include <sdw.h>
+#include "bucket_config.h"
 
 class CBucketPan
 {
@@ -17,6 +18,7 @@ public:
 	enum EAction
 	{
 		kActionNone,
+		kActionConfig,
 		kActionSample,
 		kActionHelp
 	};
@@ -36,8 +38,10 @@ public:
 private:
 	EParseOptionReturn parseOptions(const UChar* a_pName, int& a_nIndex, int a_nArgc, UChar* a_pArgv[]);
 	EParseOptionReturn parseOptions(int a_nKey, int& a_nIndex, int a_nArgc, UChar* a_pArgv[]);
+	bool config();
 	int sample();
 	EAction m_eAction;
+	CBucketConfig m_BucketConfig;
 	UString m_sMessage;
 };
 

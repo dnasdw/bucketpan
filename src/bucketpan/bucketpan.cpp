@@ -3,6 +3,7 @@
 CBucketPan::SOption CBucketPan::s_Option[] =
 {
 	{ nullptr, 0, USTR("action:") },
+	{ USTR("config"), 0, USTR("Enter an interactive configuration session.") },
 	{ USTR("sample"), 0, USTR("show the samples") },
 	{ USTR("help"), USTR('h'), USTR("show this help") },
 	{ nullptr, 0, nullptr }
@@ -131,6 +132,14 @@ int CBucketPan::Help()
 
 int CBucketPan::Action()
 {
+	if (m_eAction == kActionConfig)
+	{
+		if (!config())
+		{
+			UPrintf(USTR("ERROR: config failed\n\n"));
+			return 1;
+		}
+	}
 	if (m_eAction == kActionSample)
 	{
 		return sample();
@@ -144,7 +153,18 @@ int CBucketPan::Action()
 
 CBucketPan::EParseOptionReturn CBucketPan::parseOptions(const UChar* a_pName, int& a_nIndex, int a_nArgc, UChar* a_pArgv[])
 {
-	if (UCscmp(a_pName, USTR("sample")) == 0)
+	if (UCscmp(a_pName, USTR("config")) == 0)
+	{
+		if (m_eAction == kActionNone)
+		{
+			m_eAction = kActionConfig;
+		}
+		else if (m_eAction != kActionConfig && m_eAction != kActionHelp)
+		{
+			return kParseOptionReturnOptionConflict;
+		}
+	}
+	else if (UCscmp(a_pName, USTR("sample")) == 0)
 	{
 		if (m_eAction == kActionNone)
 		{
@@ -172,6 +192,11 @@ CBucketPan::EParseOptionReturn CBucketPan::parseOptions(int a_nKey, int& a_nInde
 		}
 	}
 	return kParseOptionReturnIllegalOption;
+}
+
+bool CBucketPan::config()
+{
+	return m_BucketConfig.EditConfig();
 }
 
 int CBucketPan::sample()
